@@ -1,7 +1,14 @@
+using TechnicalAssessment_ChannelEngine.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Configuration.AddUserSecrets<Program>();
+
+// Register the ChannelEngineKey configuration section (API key dependency injection)
+builder.Services.Configure<ChannelEngineKey>(
+    builder.Configuration.GetSection("ChannelEngine"));
 
 var app = builder.Build();
 
