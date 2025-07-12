@@ -1,39 +1,23 @@
-﻿@model IEnumerable<TechnicalAssessment_ChannelEngine.Models.Order>
+﻿@model IEnumerable<TechnicalAssessment_ChannelEngine.Models.Product>
 
-<h1>Orders in Progress</h1>
+<h1>Aggregated Products</h1>
 
-@foreach (var order in Model)
-{
-    <div style="margin-bottom: 30px;">
-        <h3>Order ID: @order.Id | Status: @order.Status</h3>
-
-        @if (order.Lines.Any())
+<table>
+    <thead>
+        <tr>
+            <th>GTIN</th>
+            <th>Description</th>
+            <th>Total Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
         {
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product ID</th>
-                        <th>GTIN</th>
-                        <th>Description</th>
-                        <th>Quantity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var product in order.Lines)
-                    {
-                        <tr>
-                            <td>@product.Id</td>
-                            <td>@product.Gtin</td>
-                            <td>@product.Description</td>
-                            <td>@product.Quantity</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <tr>
+                <td>@product.Gtin</td>
+                <td>@product.Description</td>
+                <td>@product.Quantity</td>
+            </tr>
         }
-        else
-        {
-            <p><em>No products in this order.</em></p>
-        }
-    </div>
-}
+    </tbody>
+</table>
