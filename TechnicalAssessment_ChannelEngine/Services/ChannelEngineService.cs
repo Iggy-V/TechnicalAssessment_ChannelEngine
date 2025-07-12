@@ -22,7 +22,7 @@ namespace TechnicalAssessment_ChannelEngine.Services
         {
             try
             {
-                Console.WriteLine($"API Key: {_apiKey}, Base URL: {_baseUrl}");
+                //Console.WriteLine($"API Key: {_apiKey}, Base URL: {_baseUrl}");
 
                 var response = await _httpClient.GetAsync($"{_baseUrl}/v2/orders?statuses=IN_PROGRESS&apikey={_apiKey}");
                 response.EnsureSuccessStatusCode();
@@ -66,6 +66,7 @@ namespace TechnicalAssessment_ChannelEngine.Services
             {
                 foreach (var line in linesElement.EnumerateArray())
                 {
+                    //Console.WriteLine(line);
                     var product = new Product
                     {
                         Id = line.GetProperty("Id").GetInt32(),
@@ -80,7 +81,7 @@ namespace TechnicalAssessment_ChannelEngine.Services
 
             return products;
         }
-
+        // Function to aggregate products from all orders in progress
         public async Task<IEnumerable<Product>> GetAggregatedProductsAsync()
         {
             var orders = await GetOrdersInProgressAsync();
@@ -109,19 +110,34 @@ namespace TechnicalAssessment_ChannelEngine.Services
                     }
                 }
             }
-
+            // Dictionary --> sorted list
             var aggregated = productMap.Values
                 .OrderByDescending(p => p.Quantity)
                 .ToList();
 
-            // Output to console
-            Console.WriteLine("Aggregated Products (Descending by Quantity):");
-            foreach (var p in aggregated)
+            return aggregated;
+        }
+
+        // Filters top 5 products only and outputs them to the console
+        public async Task<IEnumerable<Product>> GetTopProductsAsync(int count = 5)
+        {
+            var aggregated = await GetAggregatedProductsAsync();
+
+            var topProducts = aggregated
+                .Take(count)
+                .ToList();
+
+
+            // Print the top products to the console
+            Console.WriteLine($"Top {count} Products (by Quantity):");
+            foreach (var p in topProducts)
             {
                 Console.WriteLine($"GTIN: {p.Gtin}, Description: {p.Description}, Quantity: {p.Quantity}");
             }
 
-            return aggregated;
+            return topProducts;
         }
+
+
     }
 }

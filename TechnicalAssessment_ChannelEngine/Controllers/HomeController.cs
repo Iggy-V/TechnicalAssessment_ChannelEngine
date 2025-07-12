@@ -26,7 +26,7 @@ namespace TechnicalAssessment_ChannelEngine.Controllers
         {
             //Console.WriteLine(_apiKey); // Log the API key to the console for debugging purposes
 
-            var orders = await _channelEngine.GetAggregatedProductsAsync();
+            var orders = await _channelEngine.GetTopProductsAsync();
             return View(orders);
         }
 
