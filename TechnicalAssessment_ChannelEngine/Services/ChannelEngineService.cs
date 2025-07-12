@@ -72,7 +72,9 @@ namespace TechnicalAssessment_ChannelEngine.Services
                         Id = line.GetProperty("Id").GetInt32(),
                         Gtin = line.GetProperty("Gtin").GetString(),
                         Description = line.GetProperty("Description").GetString(),
-                        Quantity = line.GetProperty("Quantity").GetInt32()
+                        Quantity = line.GetProperty("Quantity").GetInt32(),
+                        MerchantProductId = line.GetProperty("MerchantProductNo").GetString(),
+                        StockLocationId = line.GetProperty("StockLocation").GetProperty("Id").GetInt32()
                     };
 
                     products.Add(product);
@@ -105,7 +107,9 @@ namespace TechnicalAssessment_ChannelEngine.Services
                             Id = product.Id,
                             Gtin = product.Gtin,
                             Description = product.Description,
-                            Quantity = product.Quantity
+                            Quantity = product.Quantity,
+                            MerchantProductId = product.MerchantProductId,
+                            StockLocationId = product.StockLocationId
                         };
                     }
                 }
@@ -132,12 +136,15 @@ namespace TechnicalAssessment_ChannelEngine.Services
             Console.WriteLine($"Top {count} Products (by Quantity):");
             foreach (var p in topProducts)
             {
-                Console.WriteLine($"GTIN: {p.Gtin}, Description: {p.Description}, Quantity: {p.Quantity}");
+                Console.WriteLine($"GTIN: {p.Gtin}, Description: {p.Description}, Quantity: {p.Quantity}, LocaitonID: {p.StockLocationId}");
             }
 
             return topProducts;
         }
 
-
+        public async Task UpdateStock(Product product, int NewStock)
+        {
+            
+        }
     }
 }
