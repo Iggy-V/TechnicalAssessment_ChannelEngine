@@ -8,7 +8,7 @@ namespace TechnicalAssessment_ChannelEngine.Services
         Task<IEnumerable<Product>> GetTopProductsAsync(int count = 5);
         Task<IEnumerable<Product>> GetAggregatedProductsAsync();
         Task<IEnumerable<Order>> GetOrdersInProgressAsync();
-
+        Task UpdateStock(Product product, int stock);
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.Text;
 using System.Text.Json;
 using TechnicalAssessment_ChannelEngine.Models;
 
@@ -142,9 +143,74 @@ namespace TechnicalAssessment_ChannelEngine.Services
             return topProducts;
         }
 
-        public async Task UpdateStock(Product product, int NewStock)
+        public async Task UpdateStock(Product product, int newStock)
         {
-            
+
+
+            // GET before update for testing
+            //string getUrl = $"{_baseUrl}/v2/offer/stock?skus={product.MerchantProductId}&stockLocationIds={product.StockLocationId}&apikey={_apiKey}";
+            //var getBeforeResponse = await _httpClient.GetAsync(getUrl);
+
+            //Console.WriteLine($"[BEFORE UPDATE] Current stock for {product.MerchantProductId}:");
+            //if (getBeforeResponse.IsSuccessStatusCode)
+            //{
+            //    var beforeJson = await getBeforeResponse.Content.ReadAsStringAsync();
+            //    Console.WriteLine(beforeJson);
+            //}
+            //else
+            //{
+            //    Console.WriteLine($"Failed to fetch stock before update. Status: {getBeforeResponse.StatusCode}");
+            //}
+
+            // PUT to update stock
+            var updatePayload = new[]
+            {
+                new
+                {
+                    MerchantProductNo = product.MerchantProductId,
+                    StockLocations = new[]
+                    {
+                        new
+                        {
+                            Stock = newStock,
+                            StockLocationId = product.StockLocationId
+                        }
+                    }
+                }
+            };
+
+            var putContent = new StringContent(JsonSerializer.Serialize(updatePayload), Encoding.UTF8, "application/json");
+            var putRequest = new HttpRequestMessage(HttpMethod.Put, $"{_baseUrl}/v2/offer/stock?apikey={_apiKey}")
+            {
+                Content = putContent
+            };
+
+            var putResponse = await _httpClient.SendAsync(putRequest);
+            if (putResponse.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"[UPDATE SUCCESS] Stock for {product.MerchantProductId} updated to {newStock}.");
+            }
+            else
+            {
+                var error = await putResponse.Content.ReadAsStringAsync();
+                Console.WriteLine($"[UPDATE FAILED] Status: {putResponse.StatusCode}, Error: {error}");
+                return;
+            }
+
+            // GET after update
+            //var getAfterResponse = await _httpClient.GetAsync(getUrl);
+
+            //Console.WriteLine($"[AFTER UPDATE] Stock for {product.MerchantProductId}:");
+            //if (getAfterResponse.IsSuccessStatusCode)
+            //{
+            //    var afterJson = await getAfterResponse.Content.ReadAsStringAsync();
+            //    Console.WriteLine(afterJson);
+            //}
+            //else
+            //{
+            //    Console.WriteLine($"Failed to fetch stock after update. Status: {getAfterResponse.StatusCode}");
+            //}
         }
+
     }
 }
