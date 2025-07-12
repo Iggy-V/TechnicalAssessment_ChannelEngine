@@ -2,27 +2,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using TechnicalAssessment_ChannelEngine.Models;
+using TechnicalAssessment_ChannelEngine.Services;
 
 namespace TechnicalAssessment_ChannelEngine.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly string _apiKey;
+        //private readonly string _apiKey;
+        private readonly ChannelEngineInterface _channelEngine;
 
-        public HomeController(ILogger<HomeController> logger, IOptions<ChannelEngineKey> options)
+
+        public HomeController(ILogger<HomeController> logger, ChannelEngineInterface channelEngine)
         {
             _logger = logger;
-            _apiKey = options.Value.ApiKey;
+            _channelEngine = channelEngine;
 
         }
 
-       
 
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
             //Console.WriteLine(_apiKey); // Log the API key to the console for debugging purposes
-            return View();
+
+            var orders = await _channelEngine.GetOrdersInProgressAsync();
+            return View(orders);
         }
 
         public IActionResult Privacy()
