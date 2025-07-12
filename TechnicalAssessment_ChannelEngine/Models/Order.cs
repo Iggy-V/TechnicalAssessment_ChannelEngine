@@ -6,6 +6,8 @@
     {
         public int Id { get; set; }
         public string Status { get; set; }
+        public List<Product> Lines { get; set; } = new();
+
     }
 
 }

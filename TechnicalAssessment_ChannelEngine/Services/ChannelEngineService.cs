@@ -29,26 +29,50 @@ namespace TechnicalAssessment_ChannelEngine.Services
             {
                 Console.WriteLine($"API Key: {_apiKey}, Base URL: {_baseUrl}");
 
-                var response = await _httpClient.GetAsync($"{_baseUrl}/v2/orders?apikey={_apiKey}");
+                var response = await _httpClient.GetAsync($"{_baseUrl}/v2/orders?statuses=IN_PROGRESS&apikey={_apiKey}");
                 response.EnsureSuccessStatusCode();
-
+                //Console.WriteLine(response);
                 var content = await response.Content.ReadAsStringAsync();
-                var ids = new List<Order>();
+                Console.WriteLine(content);
+
+                var orders = new List<Order>();
 
                 using (JsonDocument doc = JsonDocument.Parse(content))
                 {
                     var root = doc.RootElement;
                     var contentArray = root.GetProperty("Content");
 
-                    foreach (var item in contentArray.EnumerateArray())
+                    foreach (var orderElement in contentArray.EnumerateArray())
                     {
-                        var id = item.GetProperty("Id").GetInt32();
+                        var order = new Order
+                        {
+                            Id = orderElement.GetProperty("Id").GetInt32(),
+                            Status = orderElement.GetProperty("Status").GetString(),
+                            Lines = new List<Product>()
+                        };
 
-                        ids.Add(new Order { Id = id }); // Other props can be omitted
+                        if (orderElement.TryGetProperty("Lines", out var linesElement))
+                        {
+                            foreach (var line in linesElement.EnumerateArray())
+                            {
+                                var product = new Product
+                                {
+                                    Id = line.GetProperty("Id").GetInt32(),
+                                    Gtin = line.GetProperty("Gtin").GetString(),
+                                    Description = line.GetProperty("Description").GetString(),
+                                    Quantity = line.GetProperty("Quantity").GetInt32()
+                                };
+
+                                order.Lines.Add(product);
+                            }
+                        }
+
+                        orders.Add(order);
                     }
                 }
+                
 
-                return ids;
+                return orders;
             }
             catch (Exception ex)
             {
