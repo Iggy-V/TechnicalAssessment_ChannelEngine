@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36221.1 d17.14
+VisualStudioVersion = 17.14.36221.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechnicalAssessment_ChannelEngine", "TechnicalAssessment_ChannelEngine\TechnicalAssessment_ChannelEngine.csproj", "{98C6EEC8-4C14-49C8-96A6-1E077B392D39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{3DC136B2-6DB6-48C1-9FC2-7A726D36AC8E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{98C6EEC8-4C14-49C8-96A6-1E077B392D39} = {98C6EEC8-4C14-49C8-96A6-1E077B392D39}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{98C6EEC8-4C14-49C8-96A6-1E077B392D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98C6EEC8-4C14-49C8-96A6-1E077B392D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98C6EEC8-4C14-49C8-96A6-1E077B392D39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DC136B2-6DB6-48C1-9FC2-7A726D36AC8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DC136B2-6DB6-48C1-9FC2-7A726D36AC8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DC136B2-6DB6-48C1-9FC2-7A726D36AC8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DC136B2-6DB6-48C1-9FC2-7A726D36AC8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
