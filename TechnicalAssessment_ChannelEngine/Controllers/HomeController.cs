@@ -11,12 +11,14 @@ namespace TechnicalAssessment_ChannelEngine.Controllers
         private readonly ILogger<HomeController> _logger;
         //private readonly string _apiKey;
         private readonly ChannelEngineInterface _channelEngine;
+        private readonly IOrderClient _orderClient;
 
 
-        public HomeController(ILogger<HomeController> logger, ChannelEngineInterface channelEngine)
+        public HomeController(ILogger<HomeController> logger, ChannelEngineInterface channelEngine, IOrderClient orderClient)
         {
             _logger = logger;
             _channelEngine = channelEngine;
+            _orderClient = orderClient;
 
         }
 
@@ -27,7 +29,7 @@ namespace TechnicalAssessment_ChannelEngine.Controllers
             //Console.WriteLine(_apiKey); // Log the API key to the console for debugging purposes
 
             var orders = await _channelEngine.GetTopProductsAsync();
-            await _channelEngine.UpdateStock(orders.First(), 10);
+            await _orderClient.UpdateStock(orders.First(), 10);
             return View(orders);
         }
 

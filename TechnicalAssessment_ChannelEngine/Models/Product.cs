@@ -9,7 +9,7 @@
 
             public string MerchantProductId { get; set; }
 
-           public int StockLocationId { get; set; }
+            public int StockLocationId { get; set; }
 
     }
 

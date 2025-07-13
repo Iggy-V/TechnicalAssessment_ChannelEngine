@@ -11,11 +11,14 @@ builder.Configuration.AddUserSecrets<Program>();
 builder.Services.Configure<ChannelEngineKey>(
     builder.Configuration.GetSection("ChannelEngine"));
 
-// Register the ChannelEngineService as a service
-builder.Services.AddHttpClient<ChannelEngineInterface, ChannelEngineService>();
+builder.Services.AddHttpClient<IOrderClient, OrderService>();
 
+builder.Services.AddScoped<ChannelEngineInterface, ChannelEngineService>();
 
 var app = builder.Build();
+// Register the ChannelEngineService as a service
+//builder.Services.AddHttpClient<ChannelEngineInterface, ChannelEngineService>();
+//var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
