@@ -1,7 +1,7 @@
 ﻿namespace TechnicalAssessment_ChannelEngine.Models
 {
     /// Only having the necassary properties for this assignemnt there are more properties 
-    /// Check API documentation for more details
+    /// API documentation for more detailed properties list
     public class Order
     {
         public int Id { get; set; }

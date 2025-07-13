@@ -13,9 +13,10 @@ public class ChannelEngineServiceTests
     [Fact]
     public async Task GetTopProductsAsync_ReturnsTopNProducts()
     {
-        // Arrange
+        // LIST has to be in descending order of Quantity as that is done by the a different service
         var products = new List<Product>
         {
+            
             new Product
             {
                 Id = 1,
@@ -89,7 +90,6 @@ public class ChannelEngineServiceTests
     [Fact]
     public async Task SortProductsAsync_AggregatesQuantitiesCorrectly()
     {
-        // Arrange
         var orders = new List<Order>
         {
             new Order
