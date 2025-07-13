@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,7 +72,7 @@ public class ChannelEngineServiceTests
         var topProducts = (await service.GetTopProductsAsync()).ToList();
 
         // Debug print
-        Console.WriteLine(string.Join("\n", topProducts.Select(p => $"{p.Gtin} - {p.Quantity}")));
+        //Console.WriteLine(string.Join("\n", topProducts.Select(p => $"{p.Gtin} - {p.Quantity}")));
 
         // Assert
         Assert.Equal(5, topProducts.Count);
@@ -82,8 +84,10 @@ public class ChannelEngineServiceTests
 
 
 
+    // ...
+
     [Fact]
-    public async Task SortProducts_AggregatesQuantitiesCorrectly()
+    public async Task SortProductsAsync_AggregatesQuantitiesCorrectly()
     {
         // Arrange
         var orders = new List<Order>
@@ -102,21 +106,29 @@ public class ChannelEngineServiceTests
                 Id = 2,
                 Lines = new List<Product>
                 {
-                    new Product { Gtin = "A", Description = "Prod A again", Quantity = 15, MerchantProductId = "A-001", StockLocationId = 1 }
+                    new Product { Gtin = "A", Description = "Prod A again", Quantity = 15, MerchantProductId = "A-001", StockLocationId = 1 },
+                    new Product { Gtin = "C", Description = "Prod A again", Quantity = 1, MerchantProductId = "A-001", StockLocationId = 1 },
+                    new Product { Gtin = "D", Description = "Prod A again", Quantity = 2, MerchantProductId = "A-001", StockLocationId = 1 }
                 }
             }
         };
 
 
-        var aggregatedProducts = OrderService.SortProducts(orders);
+        // IMPROVE CREATE FAKE SERVICE
+        var httpClient = new HttpClient();
+        var configuration = new ConfigurationBuilder().Build();
+        var options = Options.Create(new ChannelEngineKey());
+
+        var orderService = new OrderService(httpClient, configuration, options);
+        var aggregatedProducts = await OrderService.SortProductsAsync(orders, orderService);
 
         // Assert
-        Assert.Equal(2, aggregatedProducts.Count());
+        Assert.Equal(4, aggregatedProducts.Count());
 
         var productA = aggregatedProducts.First(p => p.Gtin == "A");
         var productB = aggregatedProducts.First(p => p.Gtin == "B");
 
-        Assert.Equal(25, productA.Quantity); 
+        Assert.Equal(25, productA.Quantity);
         Assert.Equal(5, productB.Quantity);
     }
 

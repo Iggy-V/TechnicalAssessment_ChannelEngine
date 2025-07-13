@@ -11,6 +11,9 @@
 
             public int StockLocationId { get; set; }
 
+            // Should refactor this to make stock a privte property and use a method to get and set stock
+            public int Stock { get; set; }
+
     }
 
 }

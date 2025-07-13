@@ -1,13 +1,15 @@
 ﻿@model IEnumerable<TechnicalAssessment_ChannelEngine.Models.Product>
 
-<h1>Aggregated Products</h1>
+<h1 class="mt-4 mb-4 text-center">Aggregated Products</h1>
 
-<table>
-    <thead>
+<table class="table table-striped table-bordered table-hover">
+    <thead class="table-dark">
         <tr>
             <th>GTIN</th>
             <th>Description</th>
             <th>Total Quantity</th>
+            <th>Current Stock</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -17,6 +19,22 @@
                 <td>@product.Gtin</td>
                 <td>@product.Description</td>
                 <td>@product.Quantity</td>
+                <td>@product.Stock</td>
+                <td>
+                    <!-- Update Stock to 25 -->
+                    <form asp-action="UpdateStock" method="post" style="display:inline;">
+                        <input type="hidden" name="gtin" value="@product.Gtin" />
+                        <input type="hidden" name="newStock" value="25" />
+                        <button type="submit" class="btn btn-success btn-sm">Set to 25</button>
+                    </form>
+
+                    <!-- Reset Stock to 5 -->
+                    <form asp-action="UpdateStock" method="post" style="display:inline; margin-left: 5px;">
+                        <input type="hidden" name="gtin" value="@product.Gtin" />
+                        <input type="hidden" name="newStock" value="5" />
+                        <button type="submit" class="btn btn-warning btn-sm">Reset to 5</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>

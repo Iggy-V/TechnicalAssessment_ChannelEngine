@@ -85,15 +85,16 @@ namespace TechnicalAssessment_ChannelEngine.Services
 
             return products;
         }
-        // Function to aggregate products from all orders in progress
+        // Update the GetAggregatedProductsAsync method to pass the current instance to SortProducts
         public async Task<IEnumerable<Product>> GetAggregatedProductsAsync()
         {
             var orders = await GetOrdersInProgressAsync();
-            
-            return SortProducts(orders);
+
+            return await SortProductsAsync(orders, this); // Await the SortProductsAsync method
         }
 
-        public static IEnumerable<Product> SortProducts(IEnumerable<Order> orders)
+        // Modify the SortProducts method to use an instance of OrderService to call GetStock
+        public static async Task<IEnumerable<Product>> SortProductsAsync(IEnumerable<Order> orders, OrderService orderService)
         {
             var productMap = new Dictionary<string, Product>();
 
@@ -117,8 +118,10 @@ namespace TechnicalAssessment_ChannelEngine.Services
                             Description = product.Description,
                             Quantity = product.Quantity,
                             MerchantProductId = product.MerchantProductId,
-                            StockLocationId = product.StockLocationId
+                            StockLocationId = product.StockLocationId,
+                            Stock = 0
                         };
+                        productMap[product.Gtin].Stock = await orderService.GetStock(product); // Assuming stock is the same accross GTINs
                     }
                 }
             }
@@ -130,25 +133,50 @@ namespace TechnicalAssessment_ChannelEngine.Services
             return aggregated;
         }
 
+        public async Task <int> GetStock(Product product)
+        {
+            try
+            {
+                string url = $"{_baseUrl}/v2/offer/stock?skus={product.MerchantProductId}&stockLocationIds={product.StockLocationId}&apikey={_apiKey}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                using (JsonDocument doc = JsonDocument.Parse(content))
+                {
+                    var root = doc.RootElement;
+                    if (root.TryGetProperty("Content", out var contentArray) && contentArray.GetArrayLength() > 0)
+                    {
+                        var stockInfo = contentArray[0];
+                        return stockInfo.GetProperty("Stock").GetInt32();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching stock: {ex.Message}");
+            }
+            return 0; // Default value if stock is not found
+        }
 
         public async Task UpdateStock(Product product, int newStock)
         {
 
 
-            // GET before update for testing
-            //string getUrl = $"{_baseUrl}/v2/offer/stock?skus={product.MerchantProductId}&stockLocationIds={product.StockLocationId}&apikey={_apiKey}";
-            //var getBeforeResponse = await _httpClient.GetAsync(getUrl);
+           //GET before update for testing
 
-            //Console.WriteLine($"[BEFORE UPDATE] Current stock for {product.MerchantProductId}:");
-            //if (getBeforeResponse.IsSuccessStatusCode)
-            //{
-            //    var beforeJson = await getBeforeResponse.Content.ReadAsStringAsync();
-            //    Console.WriteLine(beforeJson);
-            //}
-            //else
-            //{
-            //    Console.WriteLine($"Failed to fetch stock before update. Status: {getBeforeResponse.StatusCode}");
-            //}
+           //string getUrl = $"{_baseUrl}/v2/offer/stock?skus={product.MerchantProductId}&stockLocationIds={product.StockLocationId}&apikey={_apiKey}";
+           //var getBeforeResponse = await _httpClient.GetAsync(getUrl);
+
+           // Console.WriteLine($"[BEFORE UPDATE] Current stock for {product.MerchantProductId}:");
+           // if (getBeforeResponse.IsSuccessStatusCode)
+           //     {
+           //         var beforeJson = await getBeforeResponse.Content.ReadAsStringAsync();
+           //         Console.WriteLine(beforeJson);
+           //     }
+           //     else
+           //     {
+           //         Console.WriteLine($"Failed to fetch stock before update. Status: {getBeforeResponse.StatusCode}");
+           //     }
 
             // PUT to update stock
             var updatePayload = new[]

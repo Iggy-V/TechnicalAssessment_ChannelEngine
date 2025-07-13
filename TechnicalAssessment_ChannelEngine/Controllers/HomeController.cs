@@ -28,9 +28,31 @@ namespace TechnicalAssessment_ChannelEngine.Controllers
         {
             //Console.WriteLine(_apiKey); // Log the API key to the console for debugging purposes
 
-            var orders = await _channelEngine.GetTopProductsAsync();
-            await _orderClient.UpdateStock(orders.First(), 10);
-            return View(orders);
+            var products = await _channelEngine.GetTopProductsAsync();
+
+            // Check if we've already updated the first item in this session
+            // So that I automatically set the first item to 25
+            if (TempData["UpdatedFirstItem"] == null && products.Any())
+            {
+                await _orderClient.UpdateStock(products.First(), 25);
+                TempData["UpdatedFirstItem"] = true; // Mark as done
+            }
+
+            return View(products);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateStock(string gtin, int newStock)
+        {
+            var products = await _channelEngine.GetTopProductsAsync();
+            var productToUpdate = products.FirstOrDefault(p => p.Gtin == gtin);
+
+            if (productToUpdate != null)
+            {
+                await _orderClient.UpdateStock(productToUpdate, newStock);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Privacy()
